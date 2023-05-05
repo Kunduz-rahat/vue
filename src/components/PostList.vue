@@ -1,7 +1,9 @@
 <template>
-  <div  >
-    <post-item :post='post' :key="post.id" v-for="post in posts"/>
+  <div v-if="posts.length > 0" >
+    <h2>Список постов</h2>
+    <post-item :post='post' :key="post.id" v-for="post in posts" @remove="$emit('remove', post)"/>
   </div>
+  <h2>Список постов пуст</h2>
 </template>
 
 <script>

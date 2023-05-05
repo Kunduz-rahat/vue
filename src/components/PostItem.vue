@@ -5,7 +5,7 @@
   <div>Description of post :{{ post.body }}</div>
   </div>
 <div>
-  <my-button>Удалить</my-button>
+  <my-button @click="$emit('remove', post)">Удалить</my-button>
 </div>
 </div>
 

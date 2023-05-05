@@ -2,7 +2,7 @@
   <h1>Hello</h1>
 
   <post-form @create='createPost'/>
-  <post-list :posts='posts' />
+  <post-list :posts='posts' @remove="removePost"/>
 </template>
 
 <script>
@@ -28,6 +28,9 @@ export default {
     createPost(post) {
     this.posts.push(post)
     },
+    removePost(post){
+      this.posts = this.posts.filter(p=> p.id !== post.id)
+    }
   },
 };
 </script>
