@@ -1,5 +1,6 @@
 <template>
   <h1>Page of posts</h1>
+  <my-input placeholder='Seach ...' v-model="searchQuery"/>
   <div class="btns">
     <my-button @click="showDialog">Создать пост</my-button>
     <my-select v-model="selectedSort" :options="sortOptions" />
@@ -9,7 +10,7 @@
     <post-form @create="createPost" />
   </my-dialog>
 
-  <post-list :posts="sortPosts" @remove="removePost" />
+  <post-list :posts="sortAndSearchPosts" @remove="removePost" />
 </template>
 
 <script>
@@ -19,14 +20,16 @@ import PostList from "@/components/PostList.vue";
 import MyButton from "./components/UI/MyButton.vue";
 import MyDialog from "./components/UI/MyDialog.vue";
 import MySelect from "./components/UI/MySelect.vue";
+import MyInput from './components/UI/MyInput.vue';
 export default {
   name: "App",
-  components: { PostForm, PostList, MyButton, MyDialog, MySelect },
+  components: { PostForm, PostList, MyButton, MyDialog, MySelect, MyInput },
   data() {
     return {
       posts: [],
       dialogVisible: false,
       selectedSort: "",
+      searchQuery:'',
       sortOptions: [
         { value: "title", name: "По названию" },
         { value: "body", name: "По описанию" },
@@ -61,6 +64,9 @@ export default {
   computed:{
     sortPosts(){
       return [...this.posts].sort((a, b)=> a[this.selectedSort]?.localeCompare(b[this.selectedSort]))
+    },
+    sortAndSearchPosts(){
+return this.sortPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase()))
     }
   }
 };
@@ -81,5 +87,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 20px;
 }
 </style>
