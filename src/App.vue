@@ -1,6 +1,6 @@
 <template>
   <h1>Page of posts</h1>
-  <my-input placeholder='Seach ...' v-model="searchQuery"/>
+  <my-input placeholder="Seach ..." v-model="searchQuery" />
   <div class="btns">
     <my-button @click="showDialog">Создать пост</my-button>
     <my-select v-model="selectedSort" :options="sortOptions" />
@@ -11,6 +11,9 @@
   </my-dialog>
 
   <post-list :posts="sortAndSearchPosts" @remove="removePost" />
+  <div class="pages">
+    <div class="page" v-for="page in totalPages" :key="page">{{ page }}</div>
+  </div>
 </template>
 
 <script>
@@ -20,7 +23,7 @@ import PostList from "@/components/PostList.vue";
 import MyButton from "./components/UI/MyButton.vue";
 import MyDialog from "./components/UI/MyDialog.vue";
 import MySelect from "./components/UI/MySelect.vue";
-import MyInput from './components/UI/MyInput.vue';
+import MyInput from "./components/UI/MyInput.vue";
 export default {
   name: "App",
   components: { PostForm, PostList, MyButton, MyDialog, MySelect, MyInput },
@@ -29,7 +32,11 @@ export default {
       posts: [],
       dialogVisible: false,
       selectedSort: "",
-      searchQuery:'',
+      searchQuery: "",
+      page: 1,
+      limit: 10,
+      totalPages:0,
+      loading:false,
       sortOptions: [
         { value: "title", name: "По названию" },
         { value: "body", name: "По описанию" },
@@ -49,26 +56,43 @@ export default {
     },
     async fetchPosts() {
       try {
-        const res = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts"
+        this.loading = true
+        const res = await axios(
+          "https://jsonplaceholder.typicode.com/posts",
+          {
+            params: {
+            _page:this.page,
+            _limit:this.limit
+
+            },
+          }
         );
+        this.totalPages = Math.ceil(res.headers["x-total-count"] /this.limit);
+    
         this.posts = res.data;
+            console.log(res)
       } catch (e) {
         console.log(e);
+      }finally{
+        this.loading=false
       }
     },
   },
   mounted() {
     this.fetchPosts();
   },
-  computed:{
-    sortPosts(){
-      return [...this.posts].sort((a, b)=> a[this.selectedSort]?.localeCompare(b[this.selectedSort]))
+  computed: {
+    sortPosts() {
+      return [...this.posts].sort((a, b) =>
+        a[this.selectedSort]?.localeCompare(b[this.selectedSort])
+      );
     },
-    sortAndSearchPosts(){
-return this.sortPosts.filter(post => post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase()))
-    }
-  }
+    sortAndSearchPosts() {
+      return this.sortPosts.filter((post) =>
+        post.title.toLowerCase().includes(this.searchQuery.toLocaleLowerCase())
+      );
+    },
+  },
 };
 </script>
 
@@ -88,5 +112,15 @@ return this.sortPosts.filter(post => post.title.toLowerCase().includes(this.sear
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+}
+.pages{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.page{
+  border: 2px solid teal;
+  padding: 10px;
 }
 </style>
