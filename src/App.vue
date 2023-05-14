@@ -11,8 +11,16 @@
   </my-dialog>
 
   <post-list :posts="sortAndSearchPosts" @remove="removePost" />
+
   <div class="pages">
-    <div class="page" v-for="page in totalPages" :key="page">{{ page }}</div>
+    <span
+      class="page"
+      :key="pageNumber"
+      @click="changePage(pageNumber)"
+      v-for="pageNumber in totalPages"
+      :class="{ current_page: page === pageNumber }"
+      >{{ pageNumber }}</span
+    >
   </div>
 </template>
 
@@ -35,8 +43,8 @@ export default {
       searchQuery: "",
       page: 1,
       limit: 10,
-      totalPages:0,
-      loading:false,
+      totalPages: 0,
+      loading: false,
       sortOptions: [
         { value: "title", name: "По названию" },
         { value: "body", name: "По описанию" },
@@ -54,29 +62,30 @@ export default {
     showDialog() {
       this.dialogVisible = true;
     },
+      changePage(pageNumber) {
+      this.page = pageNumber;
+      this.fetchPosts()
+    },
     async fetchPosts() {
       try {
-        this.loading = true
-        const res = await axios(
-          "https://jsonplaceholder.typicode.com/posts",
-          {
-            params: {
-            _page:this.page,
-            _limit:this.limit
+        this.loading = true;
+        const res = await axios("https://jsonplaceholder.typicode.com/posts", {
+          params: {
+            _page: this.page,
+            _limit: this.limit,
+          },
+        });
+        this.totalPages = Math.ceil(res.headers["x-total-count"] / this.limit);
 
-            },
-          }
-        );
-        this.totalPages = Math.ceil(res.headers["x-total-count"] /this.limit);
-    
         this.posts = res.data;
-            console.log(res)
+        console.log(res);
       } catch (e) {
         console.log(e);
-      }finally{
-        this.loading=false
+      } finally {
+        this.loading = false;
       }
     },
+  
   },
   mounted() {
     this.fetchPosts();
@@ -113,14 +122,17 @@ export default {
   align-items: center;
   margin-top: 20px;
 }
-.pages{
+.pages {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
 }
-.page{
+.page {
   border: 2px solid teal;
   padding: 10px;
+}
+.current_page {
+  border: 2px solid red;
 }
 </style>
