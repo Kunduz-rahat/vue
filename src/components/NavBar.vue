@@ -20,5 +20,6 @@ export default {};
     box-shadow: 2px 2px 4px 4px teal;
     padding: 15px;
     margin-bottom: 20px;
+    
 }
 </style>

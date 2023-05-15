@@ -1,18 +1,22 @@
 <template>
-<div class="post">
-  <div>
-  <div>Title of post : {{ post.title }}</div>
-  <div>Description of post :{{ post.body }}</div>
+  <div class="post">
+    <div>
+      <div>Title of post : {{ post.title }}</div>
+      <div>Description of post :{{ post.body }}</div>
+    </div>
+    <div class="btn">
+      <my-button
+        @click="$router.push(`/posts/${post.id}`)"
+        style="margin-right: 10px"
+        >Открыть</my-button
+      >
+      <my-button @click="$emit('remove', post)">Удалить</my-button>
+    </div>
   </div>
-<div>
-  <my-button @click="$emit('remove', post)">Удалить</my-button>
-</div>
-</div>
-
 </template>
 
 <script>
-import MyButton from './UI/MyButton.vue';
+import MyButton from "./UI/MyButton.vue";
 export default {
   components: { MyButton },
   props: {
@@ -32,4 +36,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}</style>
+}
+.btn {
+  display: flex;
+}
+</style>
